@@ -1,22 +1,34 @@
-//import { useState } from 'react'
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Layout from "./component/Layout";
-import Home from "./pages/Home";
-import Shop from "./pages/Shop";
-import Cart from "./pages/Cart";
+import React, { useState } from 'react';
+import { CartProvider } from './context/CartContext.js';
+import Navbar from './components/Navbar.js';
+import Home from './pages/Home.js';
+import Shop from './pages/Shop.js';
 
+/**
+ * Root Application Entry Component
+ * Manages view routing states while nesting layers inside the Cart Context loop.
+ */
 export default function App() {
+  // Client route navigation index ("home" or "shop")
+  const [activePage, setActivePage] = useState('home');
+
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Parent Route providing the layout structure */}
-        <Route path="/" element={<Layout />}>
-          {/* Nested Child Routes */}
-          <Route index element={<Home />} />
-          <Route path="shop" element={<Shop />} />
-          <Route path="cart" element={<Cart />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <CartProvider>
+      <div className="min-h-screen bg-slate-50 font-sans antialiased text-slate-800 selection:bg-emerald-200">
+        
+        {/* Pass functional hooks down into children layers via standard component attributes */}
+        <Navbar setActivePage={setActivePage} />
+        
+        {/* Conditional Component View Render Engine */}
+        <main>
+          {activePage === 'home' ? (
+            <Home setActivePage={setActivePage} />
+          ) : (
+            <Shop />
+          )}
+        </main>
+        
+      </div>
+    </CartProvider>
   );
 }
