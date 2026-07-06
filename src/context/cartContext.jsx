@@ -1,49 +1,54 @@
-import { NavLink, Outlet } from "react-router-dom";
 
-export default function Layout() {
-  // Shared active styling utility for Tailwind
-  const activeStyle = ({ isActive }) => 
-    `px-3 py-2 rounded-md font-medium text-sm transition-colors ${
-      isActive ? "bg-indigo-600 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white"
-    }`;
+import React, { createContext, useState, useContext } from 'react';
+
+// Initialize and export the context object for dependency injection
+export const CartContext = createContext(null);
+
+/**
+ * Global Cart State Provider Component
+ * Manages item counts, quantities, and real-time total price increments.
+ */
+export function CartProvider({ children }) {
+  // Array state storing objects representing jerseys currently added to cart
+  const [cart, setCart] = useState([]);
+
+  // Function to add jerseys or increment quantities reactively
+  const addToCart = (jersey) => {
+    setCart((prevCart) => {
+      // Search the array to see if the unique product layout ID exists
+      const existingItem = prevCart.find((item) => item.id === jersey.id);
+      
+      if (existingItem) {
+        // If it exists, step up the quantity attribute by 1 element
+        return prevCart.map((item) =>
+          item.id === jersey.id ? { ...item, quantity: item.quantity + 1 } : item
+        );
+      }
+      // If it is a completely new entry, append it with an initial quantity base of 1
+      return [...prevCart, { ...jersey, quantity: 1 }];
+    });
+  };
+
+  // Compute total physical product count inside cart (+1 item, +2 items etc.)
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  // Compute cumulative pricing values based on current active checkout quantities
+  const totalPrice = cart.reduce((sum, item) => sum + item.newPrice * item.quantity, 0);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Persistent Navigation Bar */}
-      <nav className="bg-gray-900 shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <span className="text-white font-bold text-xl tracking-wider">E-Shop</span>
-            </div>
-            <div className="flex space-x-4">
-              <NavLink to="/" className={activeStyle}>Home</NavLink>
-              <NavLink to="/shop" className={activeStyle}>Shop</NavLink>
-              <NavLink to="/cart" className={activeStyle}>Cart</NavLink>
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      {/* Dynamic Sub-Page Container */}
-      <main className="py-6">
-        <Outlet />
-      </main>
-      {/* Persistent Footer with Links */}
-      <footer className="bg-gray-800 text-gray-300 mt-12 py-6 border-t border-gray-700">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div>
-            <p className="text-sm">&copy; {new Date().getFullYear()} ReactStore. All rights reserved.</p>
-          </div>
-          {/* Footer Navigation Links */}
-          <div className="flex space-x-6 text-sm">
-            <NavLink to="/" className="hover:text-white transition-colors">Home</NavLink>
-            <NavLink to="/shop" className="hover:text-white transition-colors">Shop</NavLink>
-            <NavLink to="/cart" className="hover:text-white transition-colors">Cart</NavLink>
-          </div>
-        </div>
-      </footer>
-
-    </div>
+    <CartContext.Provider value={{ cart, addToCart, totalItems, totalPrice }}>
+      {children}
+    </CartContext.Provider>
   );
 }
+
+
+ // Safely extracts cart state elements without complex nested markup tree setups
+ 
+export const useCart = () => {
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error('useCart must be wrapped inside a valid CartProvider scope.');
+  }
+  return context;
+};

@@ -1,6 +1,6 @@
 import React from 'react';
 // Import context hook using structured standard ES module paths
-import { useCart } from '../context/CartContext.js';
+import { useCart } from '../context/CartContext.jsx';
 
 // Simulated raw FKApi structure featuring 20 authentic Premier League squads playing the 2025/2026 session
 const PL_JERSEYS_DATA = [

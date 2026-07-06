@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useCart } from '../context/CartContext.js';
+import { useCart } from '../context/cartContext.jsx';
  
  //Implements the requested global sticky +1 items counter component view layout.
  

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { CartProvider } from './context/CartContext.js';
-import Navbar from './components/Navbar.js';
-import Home from './pages/Home.js';
-import Shop from './pages/Shop.js';
+import { CartProvider } from './context/cartContext.jsx';
+import Navbar from './pages/navBar.jsx';
+import Home from './pages/Home.jsx';
+import Shop from './pages/Shop.jsx';
 
 /**
  * Root Application Entry Component
